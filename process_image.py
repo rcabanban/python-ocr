@@ -35,11 +35,15 @@ else:
     input_file = sys.argv[1]
     output_file = sys.argv[2]
 
+
+# input_file = "./test.jpg"
+# output_file = "./text.jpg"
+
 if not os.path.isfile(input_file):
     print "No such file '%s'" % input_file
     sys.exit()
 
-DEBUG = 0
+DEBUG = 1
 
 
 # Determine pixel intensity
@@ -143,6 +147,10 @@ def keep_box(contour):
     w_ *= 1.0
     h_ *= 1.0
 
+    if h_ < 0.00001:
+        if DEBUG:
+            print "\t Zero denominator: (" + str(xx) + "," + str(yy) + "," + str(w_) + "," + str(h_) + ")"
+        return False
     # Test it's shape - if it's too oblong or tall it's
     # probably not a real character
     if w_ / h_ < 0.1 or w_ / h_ > 10:
@@ -208,7 +216,7 @@ red_edges = cv2.Canny(red, 200, 250)
 edges = blue_edges | green_edges | red_edges
 
 # Find the contours
-contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+_, contours, hierarchy = cv2.findContours(edges.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
 hierarchy = hierarchy[0]
 
